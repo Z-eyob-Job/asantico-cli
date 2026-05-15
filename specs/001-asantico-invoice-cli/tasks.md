@@ -179,31 +179,31 @@
 
 ### Setup Tasks
 
-- [ ] T061 Create CLI package: `src/asantico_cli/cli/__init__.py`
-- [ ] T062 [P] Create CLI test package: `tests/cli/__init__.py`
-- [ ] T063 Create `pyproject.toml` with entry point `asantico = "asantico_cli.cli.app:app"` and dependencies
+- [x] T061 Create CLI package: `src/asantico_cli/cli/__init__.py`
+- [x] T062 [P] Create CLI test package: `tests/cli/__init__.py`
+- [x] T063 Create `pyproject.toml` with entry point `asantico = "asantico_cli.cli.app:app"` and dependencies
 
 ### Implementation Tasks
 
-- [ ] T064 [US6] Implement main Typer app with `--version` and `--help` in `src/asantico_cli/cli/app.py`
-- [ ] T065 [US1] Implement `invoice new` command with `--from-file` and `--property` flags in `src/asantico_cli/cli/invoice.py`
-- [ ] T066 [US2] Implement `estimate new` command with `--from-file` and `--property` flags in `src/asantico_cli/cli/estimate.py`
-- [ ] T067 [US4] Implement `properties list` command in `src/asantico_cli/cli/properties.py`
-- [ ] T068 [US4] Implement `properties add` command with `--address` flag in `src/asantico_cli/cli/properties.py`
-- [ ] T069 [US4] Implement `properties remove` command in `src/asantico_cli/cli/properties.py`
-- [ ] T070 [US5] Implement `rates list` command in `src/asantico_cli/cli/rates.py`
-- [ ] T071 [US5] Implement `rates set` command in `src/asantico_cli/cli/rates.py`
-- [ ] T072 Register all subcommands in `src/asantico_cli/cli/app.py`
+- [x] T064 [US6] Implement main Typer app with `--version` and `--help` in `src/asantico_cli/cli/app.py`
+- [x] T065 [US1] Implement `invoice new` command with `--from-file` and `--property` flags in `src/asantico_cli/cli/invoice.py`
+- [x] T066 [US2] Implement `estimate new` command with `--from-file` and `--property` flags in `src/asantico_cli/cli/estimate.py`
+- [x] T067 [US4] Implement `properties list` command in `src/asantico_cli/cli/properties.py`
+- [x] T068 [US4] Implement `properties add` command with `--address` flag in `src/asantico_cli/cli/properties.py`
+- [x] T069 [US4] Implement `properties remove` command in `src/asantico_cli/cli/properties.py`
+- [x] T070 [US5] Implement `rates list` command in `src/asantico_cli/cli/rates.py`
+- [x] T071 [US5] Implement `rates set` command in `src/asantico_cli/cli/rates.py`
+- [x] T072 Register all subcommands in `src/asantico_cli/cli/app.py`
 
 ### Test Tasks
 
-- [ ] T073 [P] [US6] Write tests for `--help` and `--version` in `tests/cli/test_app.py` using CliRunner (3 tests)
-- [ ] T074 [P] [US1] Write tests for `invoice new --from-file` in `tests/cli/test_invoice.py` (3 tests: success, missing property, invalid JSON)
-- [ ] T075 [P] [US2] Write tests for `estimate new --from-file` in `tests/cli/test_estimate.py` (2 tests: success, correct title)
-- [ ] T076 [P] [US4] Write tests for `properties` commands in `tests/cli/test_properties.py` (3 tests: list, add, remove)
-- [ ] T077 [P] [US5] Write tests for `rates` commands in `tests/cli/test_rates.py` (2 tests: list, set)
+- [x] T073 [P] [US6] Write tests for `--help` and `--version` in `tests/cli/test_app.py` using CliRunner (3 tests)
+- [x] T074 [P] [US1] Write tests for `invoice new --from-file` in `tests/cli/test_invoice.py` (3 tests: success, missing property, invalid JSON)
+- [x] T075 [P] [US2] Write tests for `estimate new --from-file` in `tests/cli/test_estimate.py` (2 tests: success, correct title)
+- [x] T076 [P] [US4] Write tests for `properties` commands in `tests/cli/test_properties.py` (3 tests: list, add, remove)
+- [x] T077 [P] [US5] Write tests for `rates` commands in `tests/cli/test_rates.py` (2 tests: list, set)
 
-**Checkpoint**: Run `pytest tests/` and verify 54 tests pass. CLI is installable via `pip install -e .`.
+**Checkpoint**: Run `pytest tests/` and verify 54 tests pass. CLI is installable via `pip install -e .`. **PASSED (92 tests)**
 
 ---
 
