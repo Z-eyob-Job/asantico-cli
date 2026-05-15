@@ -1,4 +1,5 @@
 
-# Spec Kit / Claude agent secrets
-.claude/settings.local.json
 .claude/.credentials
+.claude/settings.local.json
+.DS_Store
+# Spec Kit / Claude agent secrets
