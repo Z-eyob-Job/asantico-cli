@@ -92,24 +92,24 @@
 
 ### Implementation Tasks
 
-- [ ] T028 Create infra package: `src/asantico_cli/infra/__init__.py`
-- [ ] T029 [P] Create integration test package: `tests/integration/__init__.py`
-- [ ] T030 Implement `get_config_dir() -> Path` and `ensure_config_dir() -> None` in `src/asantico_cli/infra/config.py`
-- [ ] T031 Implement `load_properties() -> list[Property]` with default properties in `src/asantico_cli/infra/config.py`
-- [ ] T032 Implement `save_properties(properties: list[Property]) -> None` in `src/asantico_cli/infra/config.py`
-- [ ] T033 Implement `load_rates() -> dict[str, Decimal]` with defaults ($65 labor, $0 materials) in `src/asantico_cli/infra/config.py`
-- [ ] T034 Implement `save_rates(rates: dict[str, Decimal]) -> None` in `src/asantico_cli/infra/config.py`
-- [ ] T035 Implement `load_counters() -> dict[str, int]` in `src/asantico_cli/infra/config.py`
-- [ ] T036 Implement `increment_counter(doc_type: str) -> str` returning INV-0001/EST-0001 format in `src/asantico_cli/infra/config.py`
+- [x] T028 Create infra package: `src/asantico_cli/infra/__init__.py`
+- [x] T029 [P] Create integration test package: `tests/integration/__init__.py`
+- [x] T030 Implement `get_config_dir() -> Path` and `ensure_config_dir() -> None` in `src/asantico_cli/infra/config.py`
+- [x] T031 Implement `load_properties() -> list[Property]` with default properties in `src/asantico_cli/infra/config.py`
+- [x] T032 Implement `save_properties(properties: list[Property]) -> None` in `src/asantico_cli/infra/config.py`
+- [x] T033 Implement `load_rates() -> dict[str, Decimal]` with defaults ($65 labor, $0 materials) in `src/asantico_cli/infra/config.py`
+- [x] T034 Implement `save_rates(rates: dict[str, Decimal]) -> None` in `src/asantico_cli/infra/config.py`
+- [x] T035 Implement `load_counters() -> dict[str, int]` in `src/asantico_cli/infra/config.py`
+- [x] T036 Implement `increment_counter(doc_type: str) -> str` returning INV-0001/EST-0001 format in `src/asantico_cli/infra/config.py`
 
 ### Test Tasks
 
-- [ ] T037 Write test for `ensure_config_dir` creates directory in `tests/integration/test_config.py` using `tmp_path`
-- [ ] T038 Write tests for `load_properties` and `save_properties` in `tests/integration/test_config.py` (2 tests)
-- [ ] T039 Write tests for `load_rates` and `save_rates` in `tests/integration/test_config.py` (2 tests)
-- [ ] T040 Write tests for `load_counters` and `increment_counter` in `tests/integration/test_config.py` (2 tests)
+- [x] T037 Write test for `ensure_config_dir` creates directory in `tests/integration/test_config.py` using `tmp_path`
+- [x] T038 Write tests for `load_properties` and `save_properties` in `tests/integration/test_config.py` (2 tests)
+- [x] T039 Write tests for `load_rates` and `save_rates` in `tests/integration/test_config.py` (2 tests)
+- [x] T040 Write tests for `load_counters` and `increment_counter` in `tests/integration/test_config.py` (2 tests)
 
-**Checkpoint**: Run `pytest tests/` and verify 33 tests pass. Config uses `tmp_path` to avoid polluting real ~/.asantico/.
+**Checkpoint**: Run `pytest tests/` and verify 33 tests pass. Config uses `tmp_path` to avoid polluting real ~/.asantico/. **PASSED (54 tests)**
 
 ---
 
