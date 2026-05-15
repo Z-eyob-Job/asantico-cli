@@ -154,18 +154,18 @@
 
 ### Implementation Tasks
 
-- [ ] T054 [US1] [US2] Implement `load_line_items(path: Path) -> list[LineItem]` in `src/asantico_cli/infra/loader.py`
-- [ ] T055 [US1] [US2] Add JSON schema validation with Rich error messages in `src/asantico_cli/infra/loader.py`
-- [ ] T056 Create sample `examples/sample_items.json` with realistic Avenue One line items
+- [x] T054 [US1] [US2] Implement `load_line_items(path: Path) -> list[LineItem]` in `src/asantico_cli/infra/loader.py`
+- [x] T055 [US1] [US2] Add JSON schema validation with Rich error messages in `src/asantico_cli/infra/loader.py`
+- [x] T056 Create sample `examples/sample_items.json` with realistic Avenue One line items
 
 ### Test Tasks
 
-- [ ] T057 [P] Write test for loading valid JSON in `tests/integration/test_loader.py`
-- [ ] T058 [P] Write test for missing file error in `tests/integration/test_loader.py`
-- [ ] T059 [P] Write test for malformed JSON error in `tests/integration/test_loader.py`
-- [ ] T060 Write test for invalid schema error in `tests/integration/test_loader.py`
+- [x] T057 [P] Write test for loading valid JSON in `tests/integration/test_loader.py`
+- [x] T058 [P] Write test for missing file error in `tests/integration/test_loader.py`
+- [x] T059 [P] Write test for malformed JSON error in `tests/integration/test_loader.py`
+- [x] T060 Write test for invalid schema error in `tests/integration/test_loader.py`
 
-**Checkpoint**: Run `pytest tests/` and verify 41 tests pass.
+**Checkpoint**: Run `pytest tests/` and verify 41 tests pass. **PASSED (72 tests)**
 
 ---
 
