@@ -64,21 +64,21 @@
 
 ### Implementation Tasks
 
-- [ ] T018 Implement `slugify_property_name(name: str) -> str` in `src/asantico_cli/domain/slug.py`
-- [ ] T019 Implement `build_pdf_filename(doc_type: str, property_name: str, date: date) -> str` in `src/asantico_cli/domain/slug.py`
-- [ ] T020 Implement `contains_em_dash(text: str) -> bool` in `src/asantico_cli/domain/validation.py`
-- [ ] T021 Implement `validate_line_item(item: LineItem) -> list[str]` in `src/asantico_cli/domain/validation.py`
-- [ ] T022 Implement `validate_property_name(name: str) -> list[str]` in `src/asantico_cli/domain/validation.py`
+- [x] T018 Implement `slugify_property_name(name: str) -> str` in `src/asantico_cli/domain/slug.py`
+- [x] T019 Implement `build_pdf_filename(doc_type: str, property_name: str, date: date) -> str` in `src/asantico_cli/domain/slug.py`
+- [x] T020 Implement `contains_em_dash(text: str) -> bool` in `src/asantico_cli/domain/validation.py`
+- [x] T021 Implement `validate_line_item(item: LineItem) -> list[str]` in `src/asantico_cli/domain/validation.py`
+- [x] T022 Implement `validate_property_name(name: str) -> list[str]` in `src/asantico_cli/domain/validation.py`
 
 ### Test Tasks
 
-- [ ] T023 [P] Write tests for `slugify_property_name` in `tests/unit/test_slug.py` (3 tests: basic, apostrophe, spaces)
-- [ ] T024 [P] Write tests for `build_pdf_filename` in `tests/unit/test_slug.py` (2 tests: invoice, estimate)
-- [ ] T025 [P] Write tests for `contains_em_dash` in `tests/unit/test_validation.py` (2 tests: has em dash, no em dash)
-- [ ] T026 [P] Write tests for `validate_line_item` in `tests/unit/test_validation.py` (4 tests: valid, negative qty, zero qty, em dash in description)
-- [ ] T027 [P] Write tests for `validate_property_name` in `tests/unit/test_validation.py` (2 tests: valid, em dash)
+- [x] T023 [P] Write tests for `slugify_property_name` in `tests/unit/test_slug.py` (3 tests: basic, apostrophe, spaces)
+- [x] T024 [P] Write tests for `build_pdf_filename` in `tests/unit/test_slug.py` (2 tests: invoice, estimate)
+- [x] T025 [P] Write tests for `contains_em_dash` in `tests/unit/test_validation.py` (2 tests: has em dash, no em dash)
+- [x] T026 [P] Write tests for `validate_line_item` in `tests/unit/test_validation.py` (4 tests: valid, negative qty, zero qty, em dash in description)
+- [x] T027 [P] Write tests for `validate_property_name` in `tests/unit/test_validation.py` (2 tests: valid, em dash)
 
-**Checkpoint**: Run `pytest tests/unit/` and verify 27 tests pass. Slug and validation are pure functions.
+**Checkpoint**: Run `pytest tests/unit/` and verify 27 tests pass. Slug and validation are pure functions. **PASSED (43 tests)**
 
 ---
 
