@@ -1,6 +1,3 @@
-> **Note:** This is the authoritative `SPEC.md` for Sprint 1.
-> The Spec Kit workflow places its working copy at `specs/001-asantico-invoice-cli/spec.md` on the `001-asantico-invoice-cli` feature branch. Content is mirrored here at repo root for rubric submission.
-
 # Feature Specification: Asantico Invoice CLI
 
 **Feature Branch**: `001-asantico-invoice-cli`

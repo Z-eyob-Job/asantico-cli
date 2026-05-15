@@ -1,0 +1,29 @@
+{
+  "line_items": [
+    {
+      "description": "Replace garbage disposal, unit 204",
+      "quantity": 1,
+      "unit": "each",
+      "unit_price": 285.00
+    },
+    {
+      "description": "Plumbing labor, kitchen sink installation",
+      "quantity": 2.5,
+      "unit": "hr",
+      "unit_price": 95.00
+    },
+    {
+      "description": "Pressure washing, front walkway and patio",
+      "quantity": 3,
+      "unit": "hr",
+      "unit_price": 65.00
+    },
+    {
+      "description": "Light fixture replacement, hallway",
+      "quantity": 2,
+      "unit": "each",
+      "unit_price": 45.00
+    }
+  ],
+  "notes": "Work completed per tenant request. All fixtures tested and operational."
+}

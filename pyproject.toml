@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "asantico-cli"
+version = "0.1.0"
+description = "Generate professional PDF invoices and estimates for Asantico property maintenance"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [
+    {name = "Eyob Worku", email = "stark@asantico.com"},
+]
+keywords = ["invoice", "estimate", "pdf", "cli", "property-maintenance"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Accounting",
+]
+dependencies = [
+    "typer>=0.12,<1.0",
+    "reportlab>=4.2,<5.0",
+    "rich>=13.7,<14.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3,<9.0",
+    "pytest-cov>=5.0,<6.0",
+]
+
+[project.scripts]
+asantico = "asantico_cli.cli.app:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

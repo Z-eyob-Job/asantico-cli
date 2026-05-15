@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/validate-before-destructive.sh",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
