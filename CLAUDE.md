@@ -54,5 +54,12 @@ The primary user is the Asantico operator (Eyob "Stark" Worku). The primary reci
 
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan
+shell commands, and other important information, read the current plan:
+`specs/001-asantico-invoice-cli/plan.md`
+
+Related artifacts:
+- Research decisions: `specs/001-asantico-invoice-cli/research.md`
+- Data model: `specs/001-asantico-invoice-cli/data-model.md`
+- CLI contract: `specs/001-asantico-invoice-cli/contracts/cli.md`
+- Quickstart guide: `specs/001-asantico-invoice-cli/quickstart.md`
 <!-- SPECKIT END -->
