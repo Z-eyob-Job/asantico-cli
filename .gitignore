@@ -1,0 +1,4 @@
+
+# Spec Kit / Claude agent secrets
+.claude/settings.local.json
+.claude/.credentials
