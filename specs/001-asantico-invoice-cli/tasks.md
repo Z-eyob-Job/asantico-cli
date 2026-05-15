@@ -123,24 +123,24 @@
 
 ### Implementation Tasks
 
-- [ ] T041 [US1] [US2] Create PDF renderer module structure in `src/asantico_cli/infra/pdf.py`
-- [ ] T042 [US1] [US2] Implement header rendering (Asantico, Seattle WA) in `src/asantico_cli/infra/pdf.py`
-- [ ] T043 [US1] [US2] Implement recipient block (Avenue One Residential, property) in `src/asantico_cli/infra/pdf.py`
-- [ ] T044 [US1] [US2] Implement document info section (number, date, type title) in `src/asantico_cli/infra/pdf.py`
-- [ ] T045 [US1] [US2] Implement line item table with gray header in `src/asantico_cli/infra/pdf.py`
-- [ ] T046 [US1] [US2] Implement summary section (subtotal, tax, total) in `src/asantico_cli/infra/pdf.py`
-- [ ] T047 [US1] Implement invoice footer (payment terms) in `src/asantico_cli/infra/pdf.py`
-- [ ] T048 [US2] Implement estimate footer (validity period) in `src/asantico_cli/infra/pdf.py`
-- [ ] T049 [US1] [US2] Implement `render_pdf(document: Document, output_dir: Path) -> Path` in `src/asantico_cli/infra/pdf.py`
+- [x] T041 [US1] [US2] Create PDF renderer module structure in `src/asantico_cli/infra/pdf.py`
+- [x] T042 [US1] [US2] Implement header rendering (Asantico, Seattle WA) in `src/asantico_cli/infra/pdf.py`
+- [x] T043 [US1] [US2] Implement recipient block (Avenue One Residential, property) in `src/asantico_cli/infra/pdf.py`
+- [x] T044 [US1] [US2] Implement document info section (number, date, type title) in `src/asantico_cli/infra/pdf.py`
+- [x] T045 [US1] [US2] Implement line item table with gray header in `src/asantico_cli/infra/pdf.py`
+- [x] T046 [US1] [US2] Implement summary section (subtotal, tax, total) in `src/asantico_cli/infra/pdf.py`
+- [x] T047 [US1] Implement invoice footer (payment terms) in `src/asantico_cli/infra/pdf.py`
+- [x] T048 [US2] Implement estimate footer (validity period) in `src/asantico_cli/infra/pdf.py`
+- [x] T049 [US1] [US2] Implement `render_pdf(document: Document, output_dir: Path) -> Path` in `src/asantico_cli/infra/pdf.py`
 
 ### Test Tasks
 
-- [ ] T050 [P] Write test for invoice PDF creation in `tests/integration/test_pdf.py` using `tmp_path`
-- [ ] T051 [P] Write test for estimate PDF creation in `tests/integration/test_pdf.py`
-- [ ] T052 Write test for output directory auto-creation in `tests/integration/test_pdf.py`
-- [ ] T053 Write test for PDF contains required sections in `tests/integration/test_pdf.py`
+- [x] T050 [P] Write test for invoice PDF creation in `tests/integration/test_pdf.py` using `tmp_path`
+- [x] T051 [P] Write test for estimate PDF creation in `tests/integration/test_pdf.py`
+- [x] T052 Write test for output directory auto-creation in `tests/integration/test_pdf.py`
+- [x] T053 Write test for PDF contains required sections in `tests/integration/test_pdf.py`
 
-**Checkpoint**: Run `pytest tests/` and verify 37 tests pass. PDF module is isolated and mockable.
+**Checkpoint**: Run `pytest tests/` and verify 37 tests pass. PDF module is isolated and mockable. **PASSED (60 tests)**
 
 ---
 
