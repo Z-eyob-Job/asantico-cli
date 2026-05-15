@@ -26,31 +26,31 @@
 
 ### Setup Tasks
 
-- [ ] T001 Create package structure: `src/asantico_cli/__init__.py` with `__version__ = "0.1.0"`
-- [ ] T002 [P] Create domain package: `src/asantico_cli/domain/__init__.py`
-- [ ] T003 [P] Create test package structure: `tests/__init__.py`, `tests/unit/__init__.py`
+- [x] T001 Create package structure: `src/asantico_cli/__init__.py` with `__version__ = "0.1.0"`
+- [x] T002 [P] Create domain package: `src/asantico_cli/domain/__init__.py`
+- [x] T003 [P] Create test package structure: `tests/__init__.py`, `tests/unit/__init__.py`
 
 ### Implementation Tasks
 
-- [ ] T004 Implement `LineItem` dataclass with computed `line_total` and `line_tax` properties in `src/asantico_cli/domain/models.py`
-- [ ] T005 Implement `Document` dataclass with computed `subtotal`, `total_tax`, `grand_total` properties in `src/asantico_cli/domain/models.py`
-- [ ] T006 [P] Implement `Property` dataclass with `name`, `address`, and computed `slug` property in `src/asantico_cli/domain/models.py`
-- [ ] T007 [P] Implement `Rate` dataclass in `src/asantico_cli/domain/models.py`
-- [ ] T008 Implement `SEATTLE_TAX_RATE`, `VALID_UNITS`, `DOC_TYPE_*`, `DOC_PREFIX` constants in `src/asantico_cli/domain/models.py`
-- [ ] T009 Implement `compute_line_tax(line_total: Decimal) -> Decimal` in `src/asantico_cli/domain/tax.py`
-- [ ] T010 Implement `compute_totals(line_items: list[LineItem]) -> tuple[Decimal, Decimal, Decimal]` in `src/asantico_cli/domain/tax.py`
-- [ ] T011 Implement `format_currency(amount: Decimal) -> str` returning `$1,234.56` format in `src/asantico_cli/domain/tax.py`
+- [x] T004 Implement `LineItem` dataclass with computed `line_total` and `line_tax` properties in `src/asantico_cli/domain/models.py`
+- [x] T005 Implement `Document` dataclass with computed `subtotal`, `total_tax`, `grand_total` properties in `src/asantico_cli/domain/models.py`
+- [x] T006 [P] Implement `Property` dataclass with `name`, `address`, and computed `slug` property in `src/asantico_cli/domain/models.py`
+- [x] T007 [P] Implement `Rate` dataclass in `src/asantico_cli/domain/models.py`
+- [x] T008 Implement `SEATTLE_TAX_RATE`, `VALID_UNITS`, `DOC_TYPE_*`, `DOC_PREFIX` constants in `src/asantico_cli/domain/models.py`
+- [x] T009 Implement `compute_line_tax(line_total: Decimal) -> Decimal` in `src/asantico_cli/domain/tax.py`
+- [x] T010 Implement `compute_totals(line_items: list[LineItem]) -> tuple[Decimal, Decimal, Decimal]` in `src/asantico_cli/domain/tax.py`
+- [x] T011 Implement `format_currency(amount: Decimal) -> str` returning `$1,234.56` format in `src/asantico_cli/domain/tax.py`
 
 ### Test Tasks
 
-- [ ] T012 [P] Write tests for `LineItem` creation and computed properties in `tests/unit/test_models.py` (3 tests)
-- [ ] T013 [P] Write tests for `Document` creation and computed properties in `tests/unit/test_models.py` (2 tests)
-- [ ] T014 [P] Write tests for `Property` creation and slug generation in `tests/unit/test_models.py` (2 tests)
-- [ ] T015 Write tests for `compute_line_tax` in `tests/unit/test_tax.py` (3 tests: basic, labor, rounding)
-- [ ] T016 Write tests for `compute_totals` in `tests/unit/test_tax.py` (2 tests: single item, multiple items)
-- [ ] T017 Write tests for `format_currency` in `tests/unit/test_tax.py` (2 tests: with commas, zero)
+- [x] T012 [P] Write tests for `LineItem` creation and computed properties in `tests/unit/test_models.py` (3 tests)
+- [x] T013 [P] Write tests for `Document` creation and computed properties in `tests/unit/test_models.py` (2 tests)
+- [x] T014 [P] Write tests for `Property` creation and slug generation in `tests/unit/test_models.py` (2 tests)
+- [x] T015 Write tests for `compute_line_tax` in `tests/unit/test_tax.py` (3 tests: basic, labor, rounding)
+- [x] T016 Write tests for `compute_totals` in `tests/unit/test_tax.py` (2 tests: single item, multiple items)
+- [x] T017 Write tests for `format_currency` in `tests/unit/test_tax.py` (2 tests: with commas, zero)
 
-**Checkpoint**: Run `pytest tests/unit/` and verify 14 tests pass. All business logic is pure functions.
+**Checkpoint**: Run `pytest tests/unit/` and verify 14 tests pass. All business logic is pure functions. **PASSED (21 tests)**
 
 ---
 
