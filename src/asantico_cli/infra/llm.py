@@ -57,6 +57,41 @@ def prompt_hash(redacted_text: str) -> str:
     return hashlib.sha256(redacted_text.encode("utf-8")).hexdigest()
 
 
+def normalize_raw_text(raw_text: str) -> str:
+    """Normalize raw request text before redaction and hashing.
+
+    Collapses line endings to "\\n" and strips leading and trailing whitespace
+    so that a trailing newline (for example one added by a shell pipe to stdin)
+    does not change the cache key.
+
+    Args:
+        raw_text: The raw request text from a file or stdin.
+
+    Returns:
+        The normalized text.
+    """
+    return raw_text.replace("\r\n", "\n").replace("\r", "\n").strip()
+
+
+def canonical_redaction(raw_text: str) -> tuple[str, dict[str, str], str]:
+    """Normalize, redact, and hash raw text. Single source of truth for keys.
+
+    Both the offline cache builder and runtime triage must call this function so
+    that the cache key computed at build time matches the key computed at
+    runtime for the same request.
+
+    Args:
+        raw_text: The raw, possibly PII-bearing request text.
+
+    Returns:
+        A tuple of (redacted_text, mapping, digest) where digest is the cache
+        and audit key for the normalized, redacted text.
+    """
+    normalized = normalize_raw_text(raw_text)
+    redacted_text, mapping = redact(normalized)
+    return redacted_text, mapping, prompt_hash(redacted_text)
+
+
 def get_triage_cache_dir() -> Path:
     """Return the directory holding recorded offline triage responses.
 
@@ -131,19 +166,19 @@ def _restore_result(result: TriageResult, mapping: dict[str, str]) -> TriageResu
     )
 
 
-def _load_cached_response(redacted_text: str) -> dict[str, Any]:
-    """Load a recorded triage response for redacted text from the cache.
+def _load_cached_response(digest: str) -> dict[str, Any]:
+    """Load a recorded triage response for a request digest from the cache.
 
     Args:
-        redacted_text: The redacted request text.
+        digest: The canonical prompt hash for the request.
 
     Returns:
         Parsed JSON response dict.
 
     Raises:
-        RuntimeError: If no recorded response exists for this text.
+        RuntimeError: If no recorded response exists for this digest.
     """
-    cache_path = get_triage_cache_dir() / f"{prompt_hash(redacted_text)}.json"
+    cache_path = get_triage_cache_dir() / f"{digest}.json"
     if not cache_path.exists():
         raise RuntimeError(
             "No recorded triage response for this request. Expected cache file "
@@ -265,8 +300,7 @@ def triage_request(
     Returns:
         A TriageResult with needs_review set and PII restored for local display.
     """
-    redacted_text, mapping = redact(raw_text)
-    digest = prompt_hash(redacted_text)
+    redacted_text, mapping, digest = canonical_redaction(raw_text)
 
     if live:
         model = MODEL_HAIKU
@@ -277,7 +311,7 @@ def triage_request(
             model = MODEL_OPUS
             result = _result_from_response(_call_model(model, redacted_text))
     else:
-        result = _result_from_response(_load_cached_response(redacted_text))
+        result = _result_from_response(_load_cached_response(digest))
         ambiguous = any(score < threshold for score in result.confidence.values())
         model = route_model(result.urgency, ambiguous)
 
