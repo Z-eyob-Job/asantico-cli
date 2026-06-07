@@ -1,0 +1,9 @@
+{
+  "id": "wo_09_heavy_pii_appliance",
+  "category": "heavy_pii",
+  "raw_text": "Tenant James O'Brien in unit 417 at Clark Roadhouse reports the clothes dryer will not heat. Clothes come out damp after a full cycle. Reach him on his cell at (206) 555-0188 or by email at james.obrien@example.com. His wife Linda O'Brien at 206.555.0190 can also let the tech in. No emergency, just needs the dryer working again.",
+  "gold": {
+    "urgency": "routine",
+    "trade": "appliance"
+  }
+}

@@ -21,6 +21,9 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Office/Business :: Financial :: Accounting",
 ]
+# Triage agent (feature 002): the offline triage path requires no new runtime
+# deps. The live LLM path reuses the existing environment and is gated behind a
+# --live flag, so no SDK is added to the default install.
 dependencies = [
     "typer>=0.12,<1.0",
     "reportlab>=4.2,<5.0",

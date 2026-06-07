@@ -1,0 +1,9 @@
+{
+  "id": "wo_10_urgent_appliance",
+  "category": "urgent",
+  "raw_text": "The refrigerator in unit 22 at Garden died overnight and is not cooling at all. The freezer is thawing and the tenant has a fridge full of groceries spoiling. Not a safety hazard but they would like a replacement or repair quickly.",
+  "gold": {
+    "urgency": "urgent",
+    "trade": "appliance"
+  }
+}

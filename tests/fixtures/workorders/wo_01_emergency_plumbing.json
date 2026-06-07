@@ -1,0 +1,9 @@
+{
+  "id": "wo_01_emergency_plumbing",
+  "category": "emergency",
+  "raw_text": "URGENT please help. A pipe burst under the kitchen sink at The Meridian unit 312 and water is pouring out across the floor and into the hallway. I shut the cabinet valve but it is still leaking. Tenant Maria Delgado, call her at 206-555-0142.",
+  "gold": {
+    "urgency": "emergency",
+    "trade": "plumbing"
+  }
+}

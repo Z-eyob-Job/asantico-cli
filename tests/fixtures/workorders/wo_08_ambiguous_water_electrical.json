@@ -1,0 +1,9 @@
+{
+  "id": "wo_08_ambiguous_water_electrical",
+  "category": "ambiguous",
+  "raw_text": "There is water pooling near the water heater closet at Gilman's Fairway unit 9, and the lights in that hallway have started flickering at the same time. Could be the water, could be the wiring, hard to say. Wanted to flag it.",
+  "gold": {
+    "urgency": "urgent",
+    "trade": "plumbing"
+  }
+}

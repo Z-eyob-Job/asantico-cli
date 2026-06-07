@@ -1,0 +1,9 @@
+{
+  "id": "wo_02_emergency_electrical",
+  "category": "emergency",
+  "raw_text": "The outlet in the living room at Portal unit 8 started sparking and there was a burning smell and a little smoke. I unplugged everything and flipped the breaker off. This feels dangerous, can someone come today.",
+  "gold": {
+    "urgency": "emergency",
+    "trade": "electrical"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "wo_05_urgent_hvac",
+  "category": "urgent",
+  "raw_text": "The furnace at Koda Condominiums unit 1102 stopped putting out heat last night and it is in the low 30s outside. Tenant has a newborn at home and the unit is getting very cold. Not flooding or sparking, but they need heat back as soon as possible.",
+  "gold": {
+    "urgency": "urgent",
+    "trade": "hvac"
+  }
+}

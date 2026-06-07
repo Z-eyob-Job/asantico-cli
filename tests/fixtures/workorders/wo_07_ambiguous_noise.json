@@ -1,0 +1,9 @@
+{
+  "id": "wo_07_ambiguous_noise",
+  "category": "ambiguous",
+  "raw_text": "Something is off in the unit at Linden Avenue Condominiums. There is a weird humming noise somewhere and it comes and goes. Not sure what it is or where it is coming from. Can someone take a look at some point.",
+  "gold": {
+    "urgency": "routine",
+    "trade": "general"
+  }
+}

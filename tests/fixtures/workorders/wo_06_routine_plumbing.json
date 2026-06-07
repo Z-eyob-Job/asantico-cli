@@ -1,0 +1,9 @@
+{
+  "id": "wo_06_routine_plumbing",
+  "category": "routine",
+  "raw_text": "The bathroom sink in unit 5 at Aprea View drains slowly. Probably just a clog in the trap. Water still goes down, just takes a minute. Whenever a plumber is in the area is fine.",
+  "gold": {
+    "urgency": "routine",
+    "trade": "plumbing"
+  }
+}

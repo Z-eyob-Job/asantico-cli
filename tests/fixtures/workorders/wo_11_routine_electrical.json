@@ -1,0 +1,9 @@
+{
+  "id": "wo_11_routine_electrical",
+  "category": "routine",
+  "raw_text": "One of the can lights in the kitchen ceiling at The Meridian unit 109 burned out and will not come back on with a new bulb. The rest of the kitchen lights work fine. Low priority, just needs the fixture looked at.",
+  "gold": {
+    "urgency": "routine",
+    "trade": "electrical"
+  }
+}

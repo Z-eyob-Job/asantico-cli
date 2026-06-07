@@ -1,0 +1,9 @@
+{
+  "id": "wo_03_routine_appliance",
+  "category": "routine",
+  "raw_text": "Hi, the dishwasher in unit 204 at Garden is not draining fully after a cycle. It still runs and washes fine, there is just some standing water at the bottom afterward. No rush, whenever you can get to it.",
+  "gold": {
+    "urgency": "routine",
+    "trade": "appliance"
+  }
+}
