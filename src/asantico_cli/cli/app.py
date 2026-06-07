@@ -5,7 +5,7 @@ from typing import Annotated, Optional
 import typer
 
 from asantico_cli import __version__
-from asantico_cli.cli import estimate, invoice, properties, rates, triage
+from asantico_cli.cli import draft_reply, estimate, invoice, properties, rates, triage
 
 app = typer.Typer(
     name="asantico",
@@ -47,6 +47,7 @@ app.add_typer(estimate.app, name="estimate")
 app.add_typer(properties.app, name="properties")
 app.add_typer(rates.app, name="rates")
 app.add_typer(triage.app, name="triage")
+app.add_typer(draft_reply.app, name="draft-reply")
 
 
 if __name__ == "__main__":

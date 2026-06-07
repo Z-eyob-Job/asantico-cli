@@ -6,7 +6,9 @@ case is flagged. PII is redacted before any model call inside the triage layer;
 the table shows restored values for the operator's local view only.
 """
 
+import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
 from typing import Annotated
 
@@ -23,8 +25,32 @@ console = Console()
 error_console = Console(stderr=True)
 
 
+def _extract_raw_text(content: str) -> str:
+    """Extract the request text from file content.
+
+    If the content is a work order JSON object with a "raw_text" field, returns
+    that field so the cache key matches. Otherwise returns the content as is.
+
+    Args:
+        content: The raw file content.
+
+    Returns:
+        The request text to triage.
+    """
+    try:
+        parsed = json.loads(content)
+    except (json.JSONDecodeError, ValueError):
+        return content
+    if isinstance(parsed, dict) and isinstance(parsed.get("raw_text"), str):
+        return parsed["raw_text"]
+    return content
+
+
 def _read_source(source: str) -> str:
     """Read raw request text from a file path or stdin.
+
+    A file that is a work order JSON object with a "raw_text" field has that
+    field extracted. Plain text files and stdin are used verbatim.
 
     Args:
         source: A file path, or "-" to read from standard input.
@@ -42,7 +68,7 @@ def _read_source(source: str) -> str:
         if not path.is_file():
             error_console.print(f"[red]Error:[/red] File not found: {source}")
             raise typer.Exit(code=1)
-        raw_text = path.read_text(encoding="utf-8")
+        raw_text = _extract_raw_text(path.read_text(encoding="utf-8"))
 
     if not raw_text.strip():
         error_console.print("[red]Error:[/red] No input text provided.")
@@ -80,7 +106,7 @@ def _result_table(result: TriageResult) -> Table:
     return table
 
 
-@app.callback(invoke_without_command=True)
+@app.command("run")
 def run_triage(
     source: Annotated[
         str,
@@ -102,12 +128,20 @@ def run_triage(
             help="Minimum acceptable per-field confidence before review",
         ),
     ] = 0.7,
+    json_output: Annotated[
+        bool,
+        typer.Option(
+            "--json",
+            help="Print the TriageResult as JSON to stdout for command handoff",
+        ),
+    ] = False,
 ) -> None:
     """Triage a raw work order request and print the structured result.
 
     Reads raw text from a file or stdin, classifies urgency and trade, and
-    prints a Rich table. If the case needs review, prints a HUMAN REVIEW banner
-    and stops without progressing to drafting or estimating.
+    prints a Rich table. With --json, prints the result as JSON to stdout for
+    piping into draft-reply. If the case needs review, prints a HUMAN REVIEW
+    banner and does not progress to drafting or estimating.
     """
     raw_text = _read_source(source)
 
@@ -116,6 +150,16 @@ def run_triage(
     except RuntimeError as exc:
         error_console.print(f"[red]Error:[/red] {exc}")
         raise typer.Exit(code=1)
+
+    if json_output:
+        # Keep stdout pure JSON for piping; human messaging goes to stderr.
+        typer.echo(json.dumps(asdict(result)))
+        if result.needs_review:
+            error_console.print(
+                "HUMAN REVIEW REQUIRED: this request was flagged. "
+                "Review before sending any reply or estimate."
+            )
+        return
 
     console.print(_result_table(result))
 
