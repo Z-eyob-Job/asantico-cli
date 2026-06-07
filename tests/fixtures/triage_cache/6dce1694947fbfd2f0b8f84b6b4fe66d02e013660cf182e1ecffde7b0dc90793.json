@@ -1,0 +1,14 @@
+{
+  "urgency": "urgent",
+  "trade": "appliance",
+  "property_name": "Garden",
+  "unit": "UNIT_1",
+  "tenant_contact": null,
+  "issue_summary": "Refrigerator not cooling, freezer thawing and food spoiling",
+  "confidence": {
+    "urgency": 0.84,
+    "trade": 0.9,
+    "property_name": 0.95,
+    "unit": 0.9
+  }
+}

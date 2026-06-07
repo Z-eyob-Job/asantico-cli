@@ -1,0 +1,13 @@
+{
+  "urgency": "routine",
+  "trade": "general",
+  "property_name": "Canterbury Shores",
+  "unit": null,
+  "tenant_contact": null,
+  "issue_summary": "Touch up paint and patch drywall nail pops in hallway",
+  "confidence": {
+    "urgency": 0.93,
+    "trade": 0.82,
+    "property_name": 0.95
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "urgency": "routine",
+  "trade": "appliance",
+  "property_name": "Clark Roadhouse",
+  "unit": "UNIT_1",
+  "tenant_contact": "NAME_1, PHONE_1, EMAIL_1",
+  "issue_summary": "Clothes dryer will not heat, clothes damp after cycle",
+  "confidence": {
+    "urgency": 0.91,
+    "trade": 0.92,
+    "property_name": 0.95,
+    "unit": 0.9,
+    "tenant_contact": 0.85
+  }
+}

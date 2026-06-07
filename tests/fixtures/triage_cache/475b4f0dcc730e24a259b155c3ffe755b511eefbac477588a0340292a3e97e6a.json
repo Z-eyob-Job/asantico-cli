@@ -1,0 +1,14 @@
+{
+  "urgency": "emergency",
+  "trade": "electrical",
+  "property_name": "Portal",
+  "unit": "UNIT_1",
+  "tenant_contact": null,
+  "issue_summary": "Outlet sparking with burning smell and smoke, breaker off",
+  "confidence": {
+    "urgency": 0.97,
+    "trade": 0.94,
+    "property_name": 0.95,
+    "unit": 0.9
+  }
+}

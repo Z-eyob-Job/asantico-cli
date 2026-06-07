@@ -1,0 +1,14 @@
+{
+  "urgency": "routine",
+  "trade": "electrical",
+  "property_name": "The Meridian",
+  "unit": "UNIT_1",
+  "tenant_contact": null,
+  "issue_summary": "Kitchen can light out, does not work with new bulb",
+  "confidence": {
+    "urgency": 0.92,
+    "trade": 0.89,
+    "property_name": 0.95,
+    "unit": 0.9
+  }
+}

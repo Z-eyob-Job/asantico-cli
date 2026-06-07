@@ -1,0 +1,14 @@
+{
+  "urgency": "urgent",
+  "trade": "hvac",
+  "property_name": "Koda Condominiums",
+  "unit": "UNIT_1",
+  "tenant_contact": null,
+  "issue_summary": "Furnace stopped producing heat, unit very cold",
+  "confidence": {
+    "urgency": 0.88,
+    "trade": 0.93,
+    "property_name": 0.95,
+    "unit": 0.9
+  }
+}

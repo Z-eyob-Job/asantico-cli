@@ -1,0 +1,14 @@
+{
+  "urgency": "urgent",
+  "trade": "plumbing",
+  "property_name": "Gilman's Fairway",
+  "unit": "UNIT_1",
+  "tenant_contact": null,
+  "issue_summary": "Water pooling near water heater with flickering hallway lights",
+  "confidence": {
+    "urgency": 0.66,
+    "trade": 0.5,
+    "property_name": 0.92,
+    "unit": 0.88
+  }
+}

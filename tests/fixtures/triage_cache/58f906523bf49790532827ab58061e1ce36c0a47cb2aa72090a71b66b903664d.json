@@ -1,0 +1,13 @@
+{
+  "urgency": "routine",
+  "trade": "general",
+  "property_name": "Linden Avenue Condominiums",
+  "unit": null,
+  "tenant_contact": null,
+  "issue_summary": "Intermittent humming noise of unknown source",
+  "confidence": {
+    "urgency": 0.6,
+    "trade": 0.45,
+    "property_name": 0.9
+  }
+}

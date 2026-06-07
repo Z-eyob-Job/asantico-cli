@@ -1,0 +1,14 @@
+{
+  "urgency": "routine",
+  "trade": "appliance",
+  "property_name": "Garden",
+  "unit": "UNIT_1",
+  "tenant_contact": null,
+  "issue_summary": "Dishwasher not draining fully, standing water after cycle",
+  "confidence": {
+    "urgency": 0.92,
+    "trade": 0.9,
+    "property_name": 0.96,
+    "unit": 0.94
+  }
+}

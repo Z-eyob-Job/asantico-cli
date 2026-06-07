@@ -1,0 +1,15 @@
+{
+  "urgency": "emergency",
+  "trade": "plumbing",
+  "property_name": "The Meridian",
+  "unit": "UNIT_1",
+  "tenant_contact": "NAME_1, PHONE_1",
+  "issue_summary": "Burst pipe under kitchen sink, water spreading to hallway",
+  "confidence": {
+    "urgency": 0.98,
+    "trade": 0.95,
+    "property_name": 0.97,
+    "unit": 0.93,
+    "tenant_contact": 0.9
+  }
+}

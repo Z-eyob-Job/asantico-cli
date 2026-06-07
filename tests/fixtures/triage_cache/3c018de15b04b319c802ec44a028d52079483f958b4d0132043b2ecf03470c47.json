@@ -1,0 +1,14 @@
+{
+  "urgency": "routine",
+  "trade": "plumbing",
+  "property_name": "Aprea View",
+  "unit": "UNIT_1",
+  "tenant_contact": null,
+  "issue_summary": "Bathroom sink draining slowly, likely trap clog",
+  "confidence": {
+    "urgency": 0.9,
+    "trade": 0.88,
+    "property_name": 0.94,
+    "unit": 0.9
+  }
+}
