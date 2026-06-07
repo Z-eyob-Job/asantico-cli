@@ -153,3 +153,144 @@ class TestAuditLog:
         assert "mapping" not in entry
         assert "Maria Delgado" not in json.dumps(entry)
         assert "206-555-0142" not in json.dumps(entry)
+
+
+class TestExtractJsonObject:
+    """Tests for the pure extract_json_object helper (live path parsing).
+
+    The helper is exercised offline with no API call.
+    """
+
+    EXPECTED = {
+        "urgency": "routine",
+        "trade": "appliance",
+        "property_name": "Garden",
+        "unit": "UNIT_1",
+        "tenant_contact": None,
+        "issue_summary": "Dishwasher not draining",
+        "confidence": {"urgency": 0.9, "trade": 0.88},
+    }
+
+    def _payload(self) -> str:
+        return json.dumps(self.EXPECTED)
+
+    def test_bare_json(self) -> None:
+        """A bare JSON object parses directly."""
+        assert llm.extract_json_object(self._payload()) == self.EXPECTED
+
+    def test_json_fence(self) -> None:
+        """JSON wrapped in a ```json code fence parses to the same dict."""
+        fenced = f"```json\n{self._payload()}\n```"
+        assert llm.extract_json_object(fenced) == self.EXPECTED
+
+    def test_plain_fence(self) -> None:
+        """JSON wrapped in a plain ``` code fence parses to the same dict."""
+        fenced = f"```\n{self._payload()}\n```"
+        assert llm.extract_json_object(fenced) == self.EXPECTED
+
+    def test_prose_preamble(self) -> None:
+        """JSON with leading and trailing prose parses to the same dict."""
+        wrapped = (
+            "Sure, here is the triage result you asked for:\n"
+            f"{self._payload()}\n"
+            "Let me know if you need anything else."
+        )
+        assert llm.extract_json_object(wrapped) == self.EXPECTED
+
+    def test_fence_and_preamble_combined(self) -> None:
+        """Prose plus a fenced block still parses to the same dict."""
+        combined = f"Here you go:\n```json\n{self._payload()}\n```\nThanks."
+        assert llm.extract_json_object(combined) == self.EXPECTED
+
+    def test_unparseable_raises_clear_error(self) -> None:
+        """A non-JSON response raises a clear RuntimeError with a preview."""
+        garbage = "I cannot help with that request right now."
+        with pytest.raises(RuntimeError) as excinfo:
+            llm.extract_json_object(garbage)
+        message = str(excinfo.value)
+        assert "Could not parse JSON" in message
+        assert "I cannot help" in message
+
+    def test_non_object_json_raises(self) -> None:
+        """A JSON array (non-object) raises a clear RuntimeError."""
+        with pytest.raises(RuntimeError, match="non-object JSON"):
+            llm.extract_json_object("[1, 2, 3]")
+
+
+class TestResultFromResponseCoercion:
+    """Tests that string fields are coerced to strings at the model boundary.
+
+    These run offline with no API call. They guard the live path where a model
+    may return a nested object or list for a field the schema expects flat.
+    """
+
+    def _base(self) -> dict:
+        return {
+            "urgency": "routine",
+            "trade": "appliance",
+            "property_name": "Garden",
+            "unit": "UNIT_1",
+            "issue_summary": "Dishwasher not draining",
+            "confidence": {"urgency": 0.9},
+        }
+
+    def test_tenant_contact_as_dict_is_flattened(self) -> None:
+        """A dict tenant_contact flattens to a comma joined string."""
+        data = {**self._base(), "tenant_contact": {"name": "NAME_1", "phone": "PHONE_1"}}
+        result = llm._result_from_response(data)
+        assert isinstance(result.tenant_contact, str)
+        assert result.tenant_contact == "NAME_1, PHONE_1"
+
+    def test_tenant_contact_as_list_is_flattened(self) -> None:
+        """A list tenant_contact flattens to a comma joined string."""
+        data = {**self._base(), "tenant_contact": ["NAME_1", "PHONE_1", "EMAIL_1"]}
+        result = llm._result_from_response(data)
+        assert isinstance(result.tenant_contact, str)
+        assert result.tenant_contact == "NAME_1, PHONE_1, EMAIL_1"
+
+    def test_string_field_stays_string(self) -> None:
+        """A normal string field passes through unchanged."""
+        data = {**self._base(), "tenant_contact": "NAME_1"}
+        result = llm._result_from_response(data)
+        assert result.tenant_contact == "NAME_1"
+
+    def test_none_optional_field_stays_none(self) -> None:
+        """A missing optional field stays None."""
+        data = self._base()
+        result = llm._result_from_response(data)
+        assert result.tenant_contact is None
+
+    def test_unit_as_int_is_coerced(self) -> None:
+        """A numeric unit is coerced to a string."""
+        data = {**self._base(), "unit": 204}
+        result = llm._result_from_response(data)
+        assert result.unit == "204"
+
+    def test_nested_dict_field_does_not_break_restore(self) -> None:
+        """A coerced field of tokens still round-trips through restore."""
+        data = {**self._base(), "tenant_contact": {"name": "NAME_1", "phone": "PHONE_1"}}
+        result = llm._result_from_response(data)
+        mapping = {"NAME_1": "Maria Delgado", "PHONE_1": "206-555-0142"}
+        restored = llm._restore_result(result, mapping)
+        assert restored.tenant_contact == "Maria Delgado, 206-555-0142"
+
+    def test_flatten_helper_handles_scalar_dict_list(self) -> None:
+        """The flatten helper handles scalars, dicts, and lists."""
+        assert llm._flatten_to_str("x") == "x"
+        assert llm._flatten_to_str(204) == "204"
+        assert llm._flatten_to_str({"a": "1", "b": "2"}) == "1, 2"
+        assert llm._flatten_to_str(["1", "2"]) == "1, 2"
+
+    def test_restore_result_leaves_non_string_untouched(self) -> None:
+        """_restore_result does not call .replace on a non-string field."""
+        result = TriageResult(
+            urgency="routine",
+            trade="appliance",
+            property_name="Garden",
+            unit={"raw": "204"},  # type: ignore[arg-type]
+            tenant_contact=None,
+            issue_summary="Issue",
+            confidence={},
+        )
+        restored = llm._restore_result(result, {})
+        assert restored.unit == {"raw": "204"}

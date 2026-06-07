@@ -117,8 +117,47 @@ def get_audit_log_path() -> Path:
     return get_config_dir() / "triage_audit.jsonl"
 
 
+def _flatten_to_str(value: Any) -> str:
+    """Flatten an arbitrary JSON value into a readable string.
+
+    A live model may return a nested object or list for a field the schema
+    expects to be a flat string (for example tenant_contact as
+    {"name": "NAME_1", "phone": "PHONE_1"}). This joins dict values and list
+    items with ", " so downstream code always sees a string.
+
+    Args:
+        value: A JSON scalar, dict, or list.
+
+    Returns:
+        A readable string representation.
+    """
+    if isinstance(value, dict):
+        return ", ".join(_flatten_to_str(v) for v in value.values() if v is not None)
+    if isinstance(value, (list, tuple)):
+        return ", ".join(_flatten_to_str(v) for v in value if v is not None)
+    return str(value)
+
+
+def _coerce_optional_str(value: Any) -> str | None:
+    """Coerce a value to a string, preserving None.
+
+    Args:
+        value: The raw field value from the model or cache.
+
+    Returns:
+        None if the value is None, otherwise a flattened string.
+    """
+    if value is None:
+        return None
+    return _flatten_to_str(value)
+
+
 def _result_from_response(data: dict[str, Any]) -> TriageResult:
     """Build a TriageResult from a parsed model or cache response.
+
+    String fields are coerced to strings before any redaction or restore, so a
+    live model returning a nested object or list for a string field cannot break
+    downstream code.
 
     Args:
         data: Parsed JSON with triage fields.
@@ -132,10 +171,10 @@ def _result_from_response(data: dict[str, Any]) -> TriageResult:
     return TriageResult(
         urgency=urgency,
         trade=trade,
-        property_name=data.get("property_name"),
-        unit=data.get("unit"),
-        tenant_contact=data.get("tenant_contact"),
-        issue_summary=data.get("issue_summary", ""),
+        property_name=_coerce_optional_str(data.get("property_name")),
+        unit=_coerce_optional_str(data.get("unit")),
+        tenant_contact=_coerce_optional_str(data.get("tenant_contact")),
+        issue_summary=_coerce_optional_str(data.get("issue_summary")) or "",
         confidence=confidence,
     )
 
@@ -153,7 +192,8 @@ def _restore_result(result: TriageResult, mapping: dict[str, str]) -> TriageResu
     restored: dict[str, Any] = {}
     for field_name in _RESULT_STRING_FIELDS:
         value = getattr(result, field_name)
-        restored[field_name] = restore(value, mapping) if value is not None else None
+        # Defensive: only restore strings; leave None or any stray type untouched.
+        restored[field_name] = restore(value, mapping) if isinstance(value, str) else value
     return TriageResult(
         urgency=result.urgency,
         trade=result.trade,
@@ -199,13 +239,72 @@ def _build_prompt(redacted_text: str) -> str:
     """
     return (
         "You triage property maintenance requests for Asantico. Classify the "
-        "request and return only JSON with keys urgency (emergency, urgent, or "
-        "routine), trade (plumbing, electrical, hvac, appliance, or general), "
-        "property_name, unit, tenant_contact, issue_summary, and confidence (a "
-        "map of field name to a number from 0 to 1). Do not invent PII; tokens "
-        "such as NAME_1 or PHONE_1 are already redacted, keep them as is. Do "
-        "not use em dashes.\n\nRequest:\n" + redacted_text
+        "request and return the result as JSON with keys urgency (emergency, "
+        "urgent, or routine), trade (plumbing, electrical, hvac, appliance, or "
+        "general), property_name, unit, tenant_contact, issue_summary, and "
+        "confidence (a map of field name to a number from 0 to 1). Do not "
+        "invent PII; tokens such as NAME_1 or PHONE_1 are already redacted, "
+        "keep them as is. Do not use em dashes.\n\n"
+        "Respond with ONLY a single JSON object. Do not include any prose, "
+        "explanation, or markdown code fences before or after the JSON. The "
+        "first character of your response must be { and the last must be }."
+        "\n\nRequest:\n" + redacted_text
     )
+
+
+def extract_json_object(text: str) -> dict[str, Any]:
+    """Extract and parse a single JSON object from a model response.
+
+    Handles bare JSON, JSON wrapped in a markdown code fence (```json ... ```
+    or ``` ... ```), and JSON surrounded by leading or trailing prose by taking
+    the substring from the first "{" to the last "}".
+
+    Args:
+        text: The raw model response text.
+
+    Returns:
+        The parsed JSON object as a dict.
+
+    Raises:
+        RuntimeError: If no JSON object can be parsed. The message includes the
+            first 200 characters of the raw response for diagnosis.
+    """
+    candidate = text.strip()
+
+    # Strip a surrounding markdown code fence if present.
+    if candidate.startswith("```"):
+        lines = candidate.splitlines()
+        # Drop the opening fence line (```json or ``` or ```JSON etc).
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+        # Drop the closing fence line if present.
+        if lines and lines[-1].strip().startswith("```"):
+            lines = lines[:-1]
+        candidate = "\n".join(lines).strip()
+
+    # If prose surrounds the object, take from the first { to the last }.
+    if not candidate.startswith("{") or not candidate.endswith("}"):
+        start = candidate.find("{")
+        end = candidate.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            candidate = candidate[start : end + 1]
+
+    try:
+        parsed = json.loads(candidate)
+    except (json.JSONDecodeError, ValueError) as exc:
+        preview = text.strip()[:200]
+        raise RuntimeError(
+            "Could not parse JSON from the model response. "
+            f"First 200 chars of the raw response: {preview!r}"
+        ) from exc
+
+    if not isinstance(parsed, dict):
+        preview = text.strip()[:200]
+        raise RuntimeError(
+            "Model response parsed to a non-object JSON value. "
+            f"First 200 chars of the raw response: {preview!r}"
+        )
+    return parsed
 
 
 def _call_model(model: str, redacted_text: str) -> dict[str, Any]:
@@ -245,7 +344,7 @@ def _call_model(model: str, redacted_text: str) -> dict[str, Any]:
     text = "".join(  # pragma: no cover - live path
         block.text for block in message.content if getattr(block, "type", "") == "text"
     )
-    return json.loads(text)  # pragma: no cover - live path
+    return extract_json_object(text)  # pragma: no cover - live path
 
 
 def _write_audit_line(

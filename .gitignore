@@ -28,3 +28,8 @@ output/
 # Claude/Spec Kit secrets
 .claude/.credentials
 .claude/settings.local.json
+
+# Secrets / API keys
+.env
+.env.*
+*.key
