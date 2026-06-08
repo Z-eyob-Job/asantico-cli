@@ -23,6 +23,13 @@ _UNIT_RE = re.compile(
     re.IGNORECASE,
 )
 
+# A single name word. Each word must contain a lowercase letter, so ALL-CAPS
+# redaction tokens such as PHONE_1, EMAIL_1, UNIT_1, or NAME_1 are never
+# absorbed into a following name (which would otherwise produce a malformed
+# doubled token like NAME_1_1 and break the round trip). Covers plain names
+# (Marcus, Lee) and apostrophe or hyphen names (O'Brien, Mary-Jane).
+_NAME_WORD = r"(?:[A-Z][a-z]*(?:['\-][A-Za-z]+)+|[A-Z][a-z]+)"
+
 # Tenant names introduced by a cue word, for example "Tenant James O'Brien".
 # Only the name is tokenized; the cue word stays. Restricting to cue words
 # avoids redacting Asantico property names such as "Clark Roadhouse".
@@ -30,7 +37,7 @@ _UNIT_RE = re.compile(
 # stay case-sensitive so it does not bleed into following lowercase words.
 _NAME_RE = re.compile(
     r"(?P<pre>(?i:\b(?:tenant|resident|wife|husband|mr|mrs|ms|contact|attn)\b)\.?:?\s+)"
-    r"(?P<name>[A-Z][a-z]+(?:\s+[A-Z][A-Za-z'.\-]+)+)"
+    r"(?P<name>" + _NAME_WORD + r"(?:\s+" + _NAME_WORD + r")+)"
 )
 
 

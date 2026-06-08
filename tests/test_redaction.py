@@ -55,6 +55,41 @@ class TestRedact:
         assert "PHONE_2" not in mapping
 
 
+class TestAdjacentPii:
+    """Regression tests for a name immediately adjacent to a phone number."""
+
+    def test_name_then_phone_separate_clean_tokens(self) -> None:
+        """Adjacent name and phone each get a single clean token."""
+        original = "Tenant Marcus Lee 206-555-0173"
+        redacted, mapping = redact(original)
+        assert mapping["NAME_1"] == "Marcus Lee"
+        assert mapping["PHONE_1"] == "206-555-0173"
+        assert "NAME_1" in redacted
+        assert "PHONE_1" in redacted
+        assert restore(redacted, mapping) == original
+
+    def test_name_directly_followed_by_phone_no_separator(self) -> None:
+        """A name directly abutting a phone (no space) still tokenizes cleanly."""
+        original = "Tenant Marcus Lee206-555-0173"
+        redacted, mapping = redact(original)
+        assert mapping["NAME_1"] == "Marcus Lee"
+        assert mapping["PHONE_1"] == "206-555-0173"
+        assert restore(redacted, mapping) == original
+
+    def test_no_doubled_suffix_token_is_produced(self) -> None:
+        """A malformed doubled-suffix token like NAME_1_1 is never produced."""
+        for original in [
+            "Tenant Marcus Lee 206-555-0173",
+            "Tenant Marcus Lee206-555-0173",
+            "Tenant Maria Delgado (206) 555-0142",
+            "Contact James O'Brien 206.555.0190",
+        ]:
+            redacted, mapping = redact(original)
+            assert "NAME_1_1" not in redacted, original
+            assert "NAME_1_1" not in mapping, original
+            assert restore(redacted, mapping) == original, original
+
+
 class TestRestore:
     """Tests for the restore function."""
 
