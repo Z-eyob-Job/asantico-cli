@@ -47,7 +47,7 @@ with the human-review gate as the backstop.
     cd asantico-cli
     python -m venv .venv && source .venv/bin/activate
     pip install -e ".[dev]"
-    python -m pytest -q                 # full suite, 165 passed
+    python -m pytest -q                 # full suite, 168 passed
 
 Run the three end-state invariants:
 
@@ -77,7 +77,7 @@ set ANTHROPIC_API_KEY in the environment and add --live to a triage run command.
 
 ## Test summary
 
-165 tests pass: the 92 pre-existing deterministic-core tests plus 73 new tests
+168 tests pass: the 92 pre-existing deterministic-core tests plus 76 new tests
 across the triage model, PII redaction, LLM routing and JSON handling, both CLI
 commands, estimate-from-triage, and the eval harness. No regression at any
 phase; the deterministic core was never modified.

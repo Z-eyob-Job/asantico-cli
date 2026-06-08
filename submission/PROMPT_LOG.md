@@ -61,7 +61,7 @@ the local .env, loaded at runtime. No secret enters the repo. Verified the live
 path works and the audit log stayed tokenized on a real call (NAME_1, PHONE_1).
 
 ## Outcome
-Nine phases, 165 passing tests (92 pre-existing core plus 73 new), the
+Nine phases, 165 passing tests (92 pre-existing core plus 76 new), the
 deterministic core untouched, and three invariants proven by execution: every
 emergency escalates, no draft is recorded without approval, and triage-fed
 estimate totals match the engine to the cent.
