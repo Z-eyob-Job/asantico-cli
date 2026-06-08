@@ -1,79 +1,152 @@
-# Asantico CLI
+# Asantico CLI and Triage Agent
 
-A spec-driven command-line tool that generates professional PDF invoices and estimates for Asantico, a Seattle property maintenance business. Built for Sprint 1 of AI410 using the GitHub Spec Kit workflow (/speckit-specify, /speckit-plan, /speckit-tasks, /speckit-implement) with a custom Claude skill and a pre-tool-use validation hook.
-## Quick start
+A spec-driven command-line tool for Asantico, a Seattle property maintenance
+business. It started as a PDF invoice and estimate generator (Sprint 1) and was
+extended with an agentic triage layer (AI410 midterm) that takes a free-text
+maintenance request and moves it through classification, escalation, a drafted
+tenant reply, and a priced estimate, with a human approving anything
+client-facing.
 
-Prerequisites: Python 3.13 and pip. (uv is used for Spec Kit but is not required to run the CLI.)
-From the repo root:
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
+Built with Python 3.13, Typer, ReportLab, and Rich, on a layered architecture
+(pure domain logic, infra for I/O, Typer CLI). The deterministic invoice and
+estimate engine is unchanged by the agent; the agent feeds it.
+
+## Midterm submission
+
+All midterm artifacts live in the `submission/` folder. Start with
+`submission/SUBMISSION_INDEX.md`, which maps each rubric item to its file and
+lists the exact commands to verify every behavior.
+
+| Required output | File |
+|---|---|
+| SPEC.md (requirements, constraints) | submission/SPEC_midterm.md |
+| TASKS.md (executable plan) | submission/TASKS_midterm.md |
+| Model selection rationale | submission/MODEL_SELECTION.md |
+| Responsible AI risk and mitigation | submission/RESPONSIBLE_AI.md |
+| Prompt log (key steps and decisions) | submission/PROMPT_LOG.md |
+| Sprint 3 team formation notes | submission/SPRINT3_NOTES.md |
+| Command documentation | docs/triage-agent.md |
+
+## Setup
+
+Prerequisites: Python 3.13 and pip. From the repo root:
+
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -e ".[dev]"
+
 Verify the install:
-asantico --version
-asantico --help
-## Generate a sample invoice
 
-asantico invoice new --from-file examples/sample_items.json --property "The Meridian"
-The PDF lands in ./output/ with the pattern invoice_<property-slug>_YYYY-MM-DD.pdf. Two reference PDFs are checked in at examples/ so you can see expected output without running the CLI.
-## Generate a sample estimate
+    asantico --version
+    asantico --help
 
-asantico estimate new --from-file examples/sample_items.json --property "Garden"
-Same workflow, different document type. Estimates carry an EST-#### document number and a validity-period footer instead of payment terms.
-## What the CLI does
+Note: every new terminal session needs `source .venv/bin/activate` first, or
+the `asantico` command will not be found.
 
-Reads a JSON file of line items, applies Seattle sales tax at 10.55% per line (labor included), assembles a styled PDF with header, recipient block (Avenue One Residential), line-item table, subtotal, tax row, total, and a footer appropriate to invoice vs estimate, then writes it to ./output/. Config (properties, rates, counters) lives under ~/.asantico/ and is created on first run.
-Commands
-CommandDescriptionasantico --versionPrint versionasantico --helpShow all commandsasantico invoice new --from-file FILE --property NAMEGenerate an invoice PDFasantico estimate new --from-file FILE --property NAMEGenerate an estimate PDFasantico properties listList configured propertiesasantico properties add NAMEAdd a property to the registryasantico properties remove NAMERemove a propertyasantico rates listShow default labor and material ratesasantico rates set TYPE VALUEUpdate a default rate
+## How to test it
+
+The full suite runs offline with no API key:
+
+    source .venv/bin/activate
+    python -m pytest -q
+
+Expected: 168 passed. This includes the 92 original deterministic-core tests
+plus 76 new tests for the triage agent, with no regression in the core.
+
+### Verify the three safety invariants (offline, no key)
+
+Every emergency escalates to human review:
+
+    python eval/triage_eval.py
+    # Expected: PASS, 2/2 emergencies escalated
+
+Triage to a drafted reply (the full agent pipeline):
+
+    asantico triage run tests/fixtures/workorders/wo_03_routine_appliance.json --json | asantico draft-reply new -
+
+Triage to a priced estimate, totals match the engine to the cent:
+
+    asantico triage run tests/fixtures/workorders/wo_03_routine_appliance.json --json | asantico estimate new --from-triage -
+
+The emergency gate fires and refuses to auto-progress:
+
+    asantico triage run tests/fixtures/workorders/wo_01_emergency_plumbing.json
+    # Expected: HUMAN REVIEW REQUIRED panel
+
+PII safety: the audit log stores tokens only, never real data:
+
+    asantico triage run tests/fixtures/workorders/wo_09_heavy_pii_appliance.json
+    tail -1 ~/.asantico/triage_audit.jsonl
+    # The logged line shows NAME_1, PHONE_1, UNIT_1, never the real values
+
+The eleven labeled fixtures in `tests/fixtures/workorders/` cover routine,
+urgent, emergency, ambiguous, and heavy-PII cases, all runnable offline.
+
+## What the triage agent does
+
+Given a free-text maintenance request it:
+
+- Classifies urgency (emergency, urgent, routine) and trade (plumbing,
+  electrical, hvac, appliance, general), and extracts the property, unit,
+  tenant contact, and a summary, each with a confidence score.
+- Escalates to human review on any emergency or any low-confidence field, and
+  does not auto-progress flagged cases.
+- Redacts tenant PII (name, phone, email, unit) before any model call or log
+  write, restoring it only for the operator's local display.
+- Routes by cost: routine requests use Claude Haiku 4.5; emergency or ambiguous
+  requests escalate to Claude Opus 4.7.
+- Drafts a tenant reply that stays a DRAFT until explicitly approved (never
+  auto-sends), and produces an estimate using the existing 10.55 percent tax
+  engine.
+
+### Triage agent commands
+
+    asantico triage run FILE|-              Classify a request (offline by default)
+    asantico triage run FILE|- --json       Emit the result as JSON for piping
+    asantico triage run FILE|- --live       Use the live model instead of the cache
+    asantico draft-reply new FILE|-         Draft a tenant reply (DRAFT until --approve)
+    asantico draft-reply new FILE|- --approve   Approve and record locally (no real send)
+    asantico estimate new --from-triage FILE|-  Build an estimate from a triaged request
+
+### Live mode (optional, needs an API key)
+
+The offline path above is fully reproducible and is what grading uses. To run
+the agent on novel free-text input, set an Anthropic API key in the environment
+and add `--live`:
+
+    export ANTHROPIC_API_KEY=sk-ant-...        # never commit this; .env is gitignored
+    echo "Refrigerator stopped cooling in unit 22, food spoiling." | asantico triage run - --live
+
+## Original invoice and estimate CLI (Sprint 1)
+
+    asantico invoice new --from-file examples/sample_items.json --property "The Meridian"
+    asantico estimate new --from-file examples/sample_items.json --property "Garden"
+
+These read a JSON file of line items, apply Seattle sales tax at 10.55 percent
+per line (labor included), and write a styled PDF to `./output/`. Reference
+PDFs are checked in under `examples/`.
+
+    asantico properties list | add NAME | remove NAME
+    asantico rates list | set TYPE VALUE
+
 ## Project layout
 
-asantico-cli/
-├── SPEC.md                            # Authoritative spec for Sprint 1
-├── CLAUDE.md                          # Project context for Claude Code
-├── pyproject.toml                     # Packaging and dependencies
-├── README.md                          # This file
-├── src/asantico_cli/
-│   ├── domain/                        # Pure logic: models, tax, slug, validation
-│   ├── infra/                         # I/O: config, PDF rendering, JSON loader
-│   └── cli/                           # Typer entrypoint and subcommands
-├── tests/                             # 92 pytest tests
-├── examples/                          # Sample JSON, sample invoice PDF, sample estimate PDF
-├── output/                            # Generated PDFs (gitignored)
-├── docs/
-│   ├── prompt-log.md                  # /speckit workflow transcript
-│   └── hook-execution-transcript.md   # Hook validation tests
-├── specs/001-asantico-invoice-cli/    # Spec Kit artifacts
-│   ├── spec.md                        # Feature spec (mirror of SPEC.md)
-│   ├── plan.md                        # 8-phase implementation plan
-│   ├── tasks.md                       # 96 actionable tasks
-│   ├── research.md                    # Tech decisions
-│   ├── data-model.md                  # Entity schemas
-│   ├── contracts/cli.md               # Command input/output contract
-│   └── quickstart.md                  # Spec Kit quickstart
-└── .claude/
-    ├── settings.json                  # Hook config (PreToolUse on Bash)
-    ├── hooks/validate-before-destructive.sh
-    └── skills/asantico-invoice-formatter/SKILL.md   # Custom skill
-## Testing
+    asantico-cli/
+    ├── submission/                 # Midterm artifact bundle (start at SUBMISSIOX.md)
+    ├── src/asantico_cli/
+    │   ├── domain/                 # Pure logic: models, tax, slug, validation, triage, redaction
+    │   ├── infra/                  # I/O: config, PDF rendering, JSON loader, llm (routing, audit)
+    │   └── cli/                    # Typer entrypoint: invoice, estimate, properties, rates, triage, draft_reply
+    ├── tests/                      # 168 pytest tests, plus fixtures/ (work orders and offline triage cache)
+    ├── eval/                       # Offline triage eval harness
+    ├── scripts/                    # Offline cache builder
+    ├── docs/                       # triage-agent.md and Sprint 1 transcripts
+    ├── examples/                   # Sample JSON and reference PDFs
+    └── specs/001-asantico-invoice-cli/   # Sprint 1 Spec Kit artifacts
 
-.venv/bin/pytest -v
-92 tests covering domain math, slug generation, filename construction, validation, config persistence, PDF rendering, JSON loading, and CLI command dispatch. Target was 15 per NFR-003.
-Sprint 1 deliverables
-Required artifactLocationSPEC.mdRepo root, mirrored from specs/001-asantico-invoice-cli/spec.mdCLAUDE.mdRepo rootCustom skill.claude/skills/asantico-invoice-formatter/SKILL.mdPre-tool-use hook.claude/settings.json plus .claude/hooks/validate-before-destructive.shPrompt log (/spec, /plan, /tasks)docs/prompt-log.mdRunnable CLIsrc/asantico_cli/, installable via pip install -e .Sample outputsexamples/invoice_the-meridian_2026-05-15.pdf, examples/estimate_garden_2026-05-15.pdf
-## How this was built
+## Responsible AI summary
 
-Every artifact was produced by an explicit spec-driven step rather than ad-hoc prompting:
-
-/speckit-specify generated SPEC.md with 17 FRs, 6 NFRs, 6 user stories, and a full requirement traceability matrix.
-/speckit-plan generated an 8-phase implementation plan with research, data model, and a formal CLI contract.
-/speckit-tasks broke the plan into 96 ordered, dependency-aware tasks with parallel markers.
-/speckit-implement executed Phases 1 through 6 (MVP scope) one phase at a time, committing after each.
-A pre-tool-use hook ran pytest and scanned for em dashes before every commit; a custom skill enforced Asantico formatting rules throughout. Both are checked in and active.
-
-The full prompt history is in docs/prompt-log.md. The Git history (git log --oneline) shows the spec, plan, tasks, skill, hook, and each implementation phase as separate commits, in order.
-## Known limitations and future work
-
-
-Interactive mode (asantico invoice new with no flags) is Phase 7 and was not built in this sprint. The interactive prompts are specified in tasks.md for the next iteration.
-The PDF currently has no top-of-page Asantico, Seattle WA business header above the document title. The bill-to and footer references are present; the masthead is the cleanest single tweak for visual polish.
-Per-line tax is computed and displayed correctly but the totals row may differ from a hand-summed pen-and-paper number by one cent on some line counts, due to ROUND_HALF_UP per-line vs sum-then-round. This is consistent with the spec ("Tax is calculated per-line and summed") and within SC-003 tolerance.
-No email integration (explicitly out of scope per spec).
+Three guarantees hold regardless of model behavior: PII is tokenized before it
+reaches the model or any persistent log, emergeng client-facing leaves the tool
+without explicit human approval. Full analysis with named limitations is in
+`submission/RESPONSIBLE_AI.md`.
