@@ -132,7 +132,7 @@ PDFs are checked in under `examples/`.
 ## Project layout
 
     asantico-cli/
-    ├── submission/                 # Midterm artifact bundle (start at SUBMISSIOX.md)
+    ├── submission/                 # Midterm artifact bundle (start at SUBMISSION_INDEX.md)
     ├── src/asantico_cli/
     │   ├── domain/                 # Pure logic: models, tax, slug, validation, triage, redaction
     │   ├── infra/                  # I/O: config, PDF rendering, JSON loader, llm (routing, audit)
@@ -147,6 +147,7 @@ PDFs are checked in under `examples/`.
 ## Responsible AI summary
 
 Three guarantees hold regardless of model behavior: PII is tokenized before it
-reaches the model or any persistent log, emergeng client-facing leaves the tool
-without explicit human approval. Full analysis with named limitations is in
+reaches the model or any persistent log, emergencies always escalate to a human
+reviewer, and no client-facing reply leaves the tool without explicit human
+approval. Full analysis with named limitations is in
 `submission/RESPONSIBLE_AI.md`.
